@@ -1,0 +1,12 @@
+learning-objectives
+working-with-sequences---a-first-start
+biostrings-package-working-with-sequences
+dnastringset
+dnastring-and-dnastringset
+translate-dnarna
+get-the-codons-of-sequences
+try-a-simple-pairwise-alignement
+reading-dna-sequence-from-a-file
+finding-patterns
+subsetting-sequences
+getting-sequences-from-entrez-database

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="Working with sequences in R" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Ignacio Cassol" />
+
+<meta name="date" content="2021-08-24" />
+
+
+<meta name="description" content="Working with sequences in R">
+
+<title>Working with sequences in R</title>
+
+<script src="libs/header-attrs/header-attrs.js"></script>
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+<link href="libs/tufte-css/envisioned.css" rel="stylesheet" />
+<link href="libs/msmb-css/msmb.css" rel="stylesheet" />
+<script>
+function toggle_visibility(id1, id2) {
+var e = document.getElementById(id1);
+var f = document.getElementById(id2);
+
+e.style.display = ((e.style.display!='none') ? 'none' : 'block');
+
+if(f.classList.contains('fa-plus-square')) {
+    f.classList.add('fa-minus-square')
+    f.classList.remove('fa-plus-square')
+} else {
+    f.classList.add('fa-plus-square')
+    f.classList.remove('fa-minus-square')
+}
+
+}
+</script>
+<script>
+function copy_link(id) {
+  var dummy = document.createElement('input'),
+  text = window.location.href.split(/[?#]/)[0] + '#' + id;
+  document.body.appendChild(dummy);
+  dummy.value = text;
+  dummy.select();
+  document.execCommand('copy');
+  document.body.removeChild(dummy);
+  
+  var tooltip = document.getElementById(id + '-tooltip');
+  tooltip.innerHTML = 'Copied!';
+}
+
+function reset_tooltip(id) {
+  var tooltip = document.getElementById(id);
+  tooltip.innerHTML = 'Copy link';
+}
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul class="navbar">
+<li class="msmb"><p class="title">Working with sequences in R<p><p class="author">Ignacio Cassol</p>
+<li class="dropdown" style="float:right">
+<a href="javascript:void(0)" class="dropbtn">&#x25BE; Chapters</a>
+<div class="dropdown-content">
+<a href=""><span class="toc-section-number">1</span> Learning objectives</a>
+<a href=""><span class="toc-section-number">2</span> Working with sequences - a first start</a>
+<a href=""><span class="toc-section-number">3</span> Biostrings package: working with sequences</a>
+<a href=""><span class="toc-section-number">4</span> Get the codons of sequences</a>
+<a href=""><span class="toc-section-number">5</span> Try a simple pairwise alignement</a>
+<a href=""><span class="toc-section-number">6</span> Reading DNA sequence from a file</a>
+<a href=""><span class="toc-section-number">7</span> Finding patterns</a>
+<a href=""><span class="toc-section-number">8</span> Getting sequences from entrez database</a>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!--bookdown:title:end--><!--bookdown:title:start--><html><body>
+<div id="learning-objectives" class="section level1" number="1">
+<h1>
+<span class="header-section-number">1</span> Learning objectives</h1>
+<p>In this chapter, we will learn about a new object, that is specialized for the manipulation of biological sequences.</p>
+<ul>
+<li>Learn about the fasta format format for biological sequences.</li>
+<li>Learn about the <code>StingSet</code> classes.</li>
+<li>Find patterns in sequence data.</li>
+<li>Download sequences from NCBI with <code>entrezr</code> r pacakge.</li>
+</ul>
+<p>This chapter is based on the course material presented by Laurent Gatto <a href="https://uclouvain-cbio.github.io/WSBIM1322/sec-biostrings.html">here</a>.</p>
+<p>In this hands-on we will use the following r packages:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">"seqinr"</span> <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>()))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"seqinr"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">"Biostrings"</span> <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>()))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"Biostrings"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">"stringr"</span> <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>()))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"stringr"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">"Biostrings"</span> <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>()))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"rentrez"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">"msmbstyle"</span> <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())) {</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"remotes"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"grimbough/msmbstyle"</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(seqinr)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Biostrings)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rentrez)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(msmbstyle)</span></code></pre></div>
+</div>
+<div id="working-with-sequences---a-first-start" class="section level1" number="2">
+<h1>
+<span class="header-section-number">2</span> Working with sequences - a first start</h1>
+<p>It is easy to use standard R character vectors to define DNA sequences. Below, we create a vector with three short sequences.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sequences <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"AAATCGA"</span>, <span class="st">"ATACAACAT"</span>, <span class="st">"TTGCCA"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sequences</span></code></pre></div>
+<pre><code>## [1] "AAATCGA"   "ATACAACAT" "TTGCCA"</code></pre>
+<p>We can ask about properties of these sequences and perform some operations using base R function:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(sequences)</span></code></pre></div>
+<pre><code>## [1] 3</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nchar</span>(sequences)</span></code></pre></div>
+<pre><code>## [1] 7 9 6</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sequences[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)]</span></code></pre></div>
+<pre><code>## [1] "AAATCGA" "TTGCCA"</code></pre>
+<p>The idea of working with r strings is fine but if we want to perform biologically relevant operations, base R fails us.</p>
+</div>
+<div id="biostrings-package-working-with-sequences" class="section level1" number="3">
+<h1>
+<span class="header-section-number">3</span> Biostrings package: working with sequences</h1>
+<p>The Bioconductor <code>Biostrings</code> package can do all that base R can do, in addition to knowing about the semantics of the sequences is handles.</p>
+<div id="dnastringset" class="section level2" number="3.1">
+<h2>
+<span class="header-section-number">3.1</span> <code>DNAStringSet()</code>
+<div class="tooltip"><button class="internal-link-btn" onclick="copy_link('dnastringset')" onmouseout="reset_tooltip('dnastringset-tooltip')"><span class="tooltiptext" id="dnastringset-tooltip">Copy link</span><i class="fa fa-link"></i></button></div>
+</h2>
+<p>We can easily create a <code>DNAStringSet</code> object from our character vector as follows:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dna <span class="ot">&lt;-</span> <span class="fu">DNAStringSet</span>(sequences)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>dna</span></code></pre></div>
+<pre><code>## DNAStringSet object of length 3:
+##     width seq
+## [1]     7 AAATCGA
+## [2]     9 ATACAACAT
+## [3]     6 TTGCCA</code></pre>
+<div class="question">
+<p class="question-begin">
+► Question
+</p>
+<div class="question-body">
+<p>
+Does the object <code>dna</code> support the operations illustrated above for a character vector, especially <code>length()</code>, <code>nchar()</code>, and <code>sample()</code>?
+</p>
+<p class="question-end">
+<span class="fa fa-square-o solution-icon"></span>
+</p>
+</div>
+</div>
+<div class="question">
+<p class="question-begin">
+► Question
+</p>
+<div class="question-body">
+<p>
+Prove to yourself that at least some other useful, DNA-specific functions exist. e.g., <code>reverse()</code> and <code>reverseComplement()</code>
+</p>
+<p class="question-end">
+<span class="fa fa-square-o solution-icon"></span>
+</p>
+</div>
+</div>
+</div>
+<div id="dnastring-and-dnastringset" class="section level2" number="3.2">
+<h2>
+<span class="header-section-number">3.2</span> <code>DNAString()</code> and <code>DNAStringSet()</code>
+<div class="tooltip"><button class="internal-link-btn" onclick="copy_link('dnastring-and-dnastringset')" onmouseout="reset_tooltip('dnastring-and-dnastringset-tooltip')"><span class="tooltiptext" id="dnastring-and-dnastringset-tooltip">Copy link</span><i class="fa fa-link"></i></button></div>
+</h2>
+<p>What is the difference between a <code>DNAString()</code> and a <code>DNAStringSet()</code>?</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DNAString</span>(<span class="st">"AGACCATG"</span>)</span></code></pre></div>
+<pre><code>## 8-letter DNAString object
+## seq: AGACCATG</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DNAStringSet</span>(<span class="fu">c</span>(<span class="st">"AGACCATG"</span>, <span class="st">"AAAAAATTTA"</span>))</span></code></pre></div>
+<pre><code>## DNAStringSet object of length 2:
+##     width seq
+## [1]     8 AGACCATG
+## [2]    10 AAAAAATTTA</code></pre>
+</div>
+<div id="translate-dnarna" class="section level2" number="3.3">
+<h2>
+<span class="header-section-number">3.3</span> Translate DNA/RNA<div class="tooltip"><button class="internal-link-btn" onclick="copy_link('translate-dnarna')" onmouseout="reset_tooltip('translate-dnarna-tooltip')"><span class="tooltiptext" id="translate-dnarna-tooltip">Copy link</span><i class="fa fa-link"></i></button></div>
+</h2>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>myProt <span class="ot">&lt;-</span> <span class="fu">translate</span>(dna)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(myProt)</span></code></pre></div>
+<pre><code>## AAStringSet object of length 3:
+##     width seq
+## [1]     2 KS
+## [2]     3 IQH
+## [3]     2 MP</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">alphabetFrequency</span>(myProt)</span></code></pre></div>
+<pre><code>##      A R N D C Q E G H I L K M F P S T W Y V U O B J Z X * - + . other
+## [1,] 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0     0
+## [2,] 0 0 0 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0     0
+## [3,] 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0     0</code></pre>
+</div>
+</div>
+<div id="get-the-codons-of-sequences" class="section level1" number="4">
+<h1>
+<span class="header-section-number">4</span> Get the codons of sequences</h1>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">codons</span>(dna[[<span class="dv">1</span>]])</span></code></pre></div>
+<pre><code>## Views on a 7-letter DNAString subject
+## subject: AAATCGA
+## views:
+##       start end width
+##   [1]     1   3     3 [AAA]
+##   [2]     4   6     3 [TCG]</code></pre>
+</div>
+<div id="try-a-simple-pairwise-alignement" class="section level1" number="5">
+<h1>
+<span class="header-section-number">5</span> Try a simple pairwise alignement</h1>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Ex1:</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairwiseAlignment</span>(<span class="st">"ACCA"</span>, <span class="st">"ACC"</span>)</span></code></pre></div>
+<pre><code>## Global PairwiseAlignmentsSingleSubject (1 of 1)
+## pattern: ACCA
+## subject: ACC-
+## score: -11.05461</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Ex2:</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairwiseAlignment</span>(<span class="fu">as.character</span>(dna)[<span class="dv">1</span>],<span class="fu">as.character</span>(dna)[<span class="dv">2</span>])</span></code></pre></div>
+<pre><code>## Global PairwiseAlignmentsSingleSubject (1 of 1)
+## pattern: AAAT--CGA
+## subject: ATACAACAT
+## score: -35.65187</code></pre>
+</div>
+<div id="reading-dna-sequence-from-a-file" class="section level1" number="6">
+<h1>
+<span class="header-section-number">6</span> Reading DNA sequence from a file</h1>
+<p>Download file <code>prue1.fasta</code> and <code>prue2.fasta</code> to your working directory and let create an object with these files:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#set your own working directory!</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>dna <span class="ot">&lt;-</span> <span class="fu">readDNAStringSet</span>(<span class="st">"prue1.fasta"</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>dna</span></code></pre></div>
+<pre><code>## DNAStringSet object of length 1:
+##     width seq                                               names               
+## [1] 26400 GGCGGCGGCAGGACCGAGCGCGG...TTCAATAAAAGTTGCTTTTCAAA NC_000014.9:c1047...</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dnas <span class="ot">&lt;-</span> <span class="fu">readDNAStringSet</span>(<span class="st">"prue2.fasta"</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>dnas</span></code></pre></div>
+<pre><code>## DNAStringSet object of length 2:
+##     width seq                                               names               
+## [1] 26400 GGCGGCGGCAGGACCGAGCGCGG...TTCAATAAAAGTTGCTTTTCAAA NC_000014.9:c1047...
+## [2]  2772 AGCAGACGCTCCCTCAGCAAGGA...ATAAAGTTTGCTTAGAAAAGAAA NC_000006.12:3157...</code></pre>
+</div>
+<div id="finding-patterns" class="section level1" number="7">
+<h1>
+<span class="header-section-number">7</span> Finding patterns</h1>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vmatchPattern</span>(<span class="at">pattern =</span> <span class="st">"GCGGCGGCA"</span>, <span class="at">subject =</span> dna)</span></code></pre></div>
+<pre><code>## MIndex object of length 1
+## $`NC_000014.9:c104795748-104769349 Homo sapiens chromosome 14, GRCh38.p13 Primary Assembly`
+## IRanges object with 2 ranges and 0 metadata columns:
+##           start       end     width
+##       &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;
+##   [1]         2        10         9
+##   [2]       110       118         9</code></pre>
+<p>You can also count the number of matches in a dna sequence by considering the sequence just as a string:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Ex1:</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>sequences</span></code></pre></div>
+<pre><code>## [1] "AAATCGA"   "ATACAACAT" "TTGCCA"</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str_count</span>(sequences, <span class="st">"ATA"</span>)</span></code></pre></div>
+<pre><code>## [1] 0 1 0</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Ex2:</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_count</span>(<span class="fu">as.character</span>(dna), <span class="st">"GCGGCGGCA"</span>)</span></code></pre></div>
+<pre><code>## [1] 2</code></pre>
+<p>Use <code>letterFrequency()</code> to determine “GC” content of each of the DNA sequences:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Op1:</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>gc_content <span class="ot">&lt;-</span> <span class="fu">letterFrequency</span>(dna, <span class="at">letters =</span> <span class="st">"GC"</span>, <span class="at">as.prob =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>gc_content</span></code></pre></div>
+<pre><code>##            G|C
+## [1,] 0.6407955</code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Op2:</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">letterFrequency</span>(dna, <span class="at">letters =</span> <span class="st">"GC"</span>, <span class="at">as.prob =</span> <span class="cn">TRUE</span>, <span class="at">OR=</span><span class="dv">0</span>)</span></code></pre></div>
+<pre><code>##              G         C
+## [1,] 0.3465152 0.2942803</code></pre>
+<p>Let work with a bigger/“more real” .fasta file:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fa_file <span class="ot">&lt;-</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">system.file</span>(<span class="at">package=</span><span class="st">"Biostrings"</span>, <span class="st">"extdata"</span>, <span class="st">"dm3_upstream2000.fa.gz"</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>dna2 <span class="ot">&lt;-</span> <span class="fu">readDNAStringSet</span>(fa_file)</span></code></pre></div>
+<div class="question">
+<p class="question-begin">
+► Question
+</p>
+<div class="question-body">
+<p>
+How many sequences does it contains?
+</p>
+<p class="question-end">
+<span class="fa fa-square-o solution-icon"></span>
+</p>
+</div>
+</div>
+<div class="question">
+<p class="question-begin">
+► Question
+</p>
+<div class="question-body">
+<p>
+What are the mean and standard deviation of the GC contents in this fasta file?
+</p>
+<p class="question-end">
+<span class="fa fa-square-o solution-icon"></span>
+</p>
+</div>
+</div>
+<div class="msmb-solution">
+<p class="solution-begin">
+► Solution<span id="sol-start-1" class="fa fa-plus-square solution-icon clickable" onclick="toggle_visibility('sol-body-1', 'sol-start-1')"></span>
+</p>
+<div id="sol-body-1" class="solution-body" style="display: none;">
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>msmbstyle<span class="sc">::</span><span class="fu">solution</span>(<span class="fu">mean</span>(gc_content))</span></code></pre></div>
+<div class="msmb-solution">
+<p class="solution-begin">
+► Solution<span id="sol-start-2" class="fa fa-plus-square solution-icon clickable" onclick="toggle_visibility('sol-body-2', 'sol-start-2')"></span>
+</p>
+<div id="sol-body-2" class="solution-body" style="display: none;">
+<p>
+0.640795454545455
+</p>
+<p class="solution-end">
+<span class="fa fa-square-o solution-icon"></span>
+</p>
+</div>
+</div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>msmbstyle<span class="sc">::</span><span class="fu">solution</span>(<span class="fu">sd</span>(gc_content))</span></code></pre></div>
+<div class="msmb-solution">
+<p class="solution-begin">
+► Solution<span id="sol-start-3" class="fa fa-plus-square solution-icon clickable" onclick="toggle_visibility('sol-body-3', 'sol-start-3')"></span>
+</p>
+<div id="sol-body-3" class="solution-body" style="display: none;">
+<p>
+NA
+</p>
+<p class="solution-end">
+<span class="fa fa-square-o solution-icon"></span>
+</p>
+</div>
+</div>
+<p class="solution-end">
+<span class="fa fa-square-o solution-icon"></span>
+</p>
+</div>
+</div>
+<div class="question">
+<p class="question-begin">
+► Question
+</p>
+<div class="question-body">
+<p>
+What gene/s has/have the highest GC content?
+</p>
+<p class="question-end">
+<span class="fa fa-square-o solution-icon"></span>
+</p>
+</div>
+</div>
+<div class="msmb-solution">
+<p class="solution-begin">
+► Solution<span id="sol-start-4" class="fa fa-plus-square solution-icon clickable" onclick="toggle_visibility('sol-body-4', 'sol-start-4')"></span>
+</p>
+<div id="sol-body-4" class="solution-body" style="display: none;">
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(gc_content)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.6407955 0.6407955</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>msmbstyle<span class="sc">::</span><span class="fu">solution</span>(dna2[<span class="fu">which</span>(gc_content <span class="sc">==</span> <span class="fu">max</span>(gc_content))])</span></code></pre></div>
+<div class="msmb-solution">
+<p class="solution-begin">
+► Solution<span id="sol-start-5" class="fa fa-plus-square solution-icon clickable" onclick="toggle_visibility('sol-body-5', 'sol-start-5')"></span>
+</p>
+<div id="sol-body-5" class="solution-body" style="display: none;">
+<p>
+GTTGGTGGCCCACCAGTGCCAAAATACACAAGAAGAAGAAACAGCATCTTGACACTAAAATGCAAAAATTGCTTTGCGTCAATGACTCAAAACGAAAATGTTTTTGTGCTTTTCGAACAAAAAATTGGGAGCAGAATATTGGATTCGCTTTTTTCGCATCGAATATCTTAAGGGAGCAAGGGAAGAACCATCTAGAATAATAAAGAAGACCAAAATGTATCGTAACTAAAGGTTTTTTTTATTAATTATTAAATGTTAAATATTAACTTATACCAACTCATTGGCTTTACAAGTACAACAAATAACCCCAAAATAATTTATTGTCAGGTGCTAAATTGTTGTTTGTTGTTCTTGGAATTTGTTTTAAATGCTCAATTTATGTTTTTGTCTTTTTGCCCACAATTCTGCTCGACAATGTCACAGATTTTGTTTCAGAAACTTAGCAAAAAGTATTATAATTTTATATGTGAGAAAAGACTAGAGAGCAGCAAACCCTGCACCGAAAATAAAGGAAAAAAACACTCACACTTGAATGAGAACTGAAATCTTTTTCAAACTATAAATATTCCTCAAAAAATGTTTGAAAGTTGTTTTTGTCCGAATTCATGAGTTGTTTTTTTGCGTATTCTTTTTCCGCTACACAATAATCATTGTTAAATATTGAATATTCAAGACGGACCAACTCATTACGAAAAGTATTTGTCGAAAATACCTTGCAGTGGGTGTATATACATTTATCATATAATTCTTTGCCAAAAATGTTGCACATGAAATTTTGTAATTTTGCTTAAAATTATGAATAATTTCTGTGTCGGAATTTGACATCGTTGTAAGAGGGGAGACTATTTCAATTCTGTTGGCATTTATCATAATTCTCTTTGTCAGCATTATAGATTTGATAAATTCTCGACAAATCGCTACAACACGAATTTCATAATGCACTCGTATTTGCAATCGTATTTGTATTGGATTTTAGCATTGAAACCTAAAGATTTTCGCATCGCATTGCTCTGAAGGACGCCGACTACATTGATTTGATGTGGCATTTCTCTGTCTATCTATCTATATCTAAAGTATCTCTTCAACTATGTGTTTTATTTCGTTTTTTTTGCGTGCATTGCAATTGCTTGCATGTTCTAGCCCATCTATGTTATTTTGAAGTTCACATCATTACTTTTGGCGGACATGTGCTTGCTATGGCCGATCCTTAGGCTAGATAGATCATCAATCATTAACTCAAAGGATCGGGTTTTTTCGTTCTACAACTGAACGATGACCAAACGAATGTTTGTAGCCATTGATAGCATACGATCGGTCTTCTCGAACAGCTGTTTAGCCACTGATCGTAAAGTGATCGCAGATTAGGAGGAAAACCACATAGCGCCGCCTGATCGCAAGCATTCCCCCTGTATTCCACCCACATTGGTGCCAGATCGGATTGGCATTGAGGTGACCAAAAACCAAAACCAGAACAAAAAGCGAAAAATGATCACCGAGAAAAACAAATAAAGATCCCACCATGCCATGCCATACACACATGTGTGCGTCTAGAAATGATATGTGAAATAAGTAAAAAGAAAGCTCCCCTTGGAAAGAGCGAGGGATTCCGGCGGAGAAGAATTGCCTCACGGCGGAAAAGTTGTCATTGAAATGAATTTTACTATTTGACTAATGGGAGAATTGCGAGAGAGCCTACGCAATGGCAATCGTCGGAGAAGGAGCTTTCCGCTCTCGATTCCGCAACGATCCTGATTGCATCATATGCTCACACATATACCATATCCACCATCCCGCAATCCCCCATAGAAATGCCCACTTGCTAGAGAAGAGGAATAGGAATCAGAGCAGCCAAGTGCTAGACCGAAAAAGGGAGCAAGAAAAACCGAAACAGAAACAGCGCCACGCACACCGATCGTCGAATCGAAAAGCTTTCGGGGTCTTACGGGATCCATGGGTATCAAGTTGCCCCGTATAAAAGGCAAGTTTACCGGTTGCACGGT
+</p>
+<p class="solution-end">
+<span class="fa fa-square-o solution-icon"></span>
+</p>
+</div>
+</div>
+<p class="solution-end">
+<span class="fa fa-square-o solution-icon"></span>
+</p>
+</div>
+</div>
+<div id="subsetting-sequences" class="section level2" number="7.1">
+<h2>
+<span class="header-section-number">7.1</span> Subsetting sequences<div class="tooltip"><button class="internal-link-btn" onclick="copy_link('subsetting-sequences')" onmouseout="reset_tooltip('subsetting-sequences-tooltip')"><span class="tooltiptext" id="subsetting-sequences-tooltip">Copy link</span><i class="fa fa-link"></i></button></div>
+</h2>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">subseq</span>(dna, <span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">100</span>)</span></code></pre></div>
+<pre><code>## DNAStringSet object of length 1:
+##     width seq                                               names               
+## [1]   100 GGCGGCGGCAGGACCGAGCGCGG...AGCACCGAGCGCTGGGCACCGGG NC_000014.9:c1047...</code></pre>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">subseq</span>(dna[[<span class="dv">1</span>]], <span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>## 10-letter DNAString object
+## seq: GGCGGCGGCA</code></pre>
+</div>
+</div>
+<div id="getting-sequences-from-entrez-database" class="section level1" number="8">
+<h1>
+<span class="header-section-number">8</span> Getting sequences from entrez database</h1>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>gene_description <span class="ot">&lt;-</span> <span class="st">"tumor protein p53"</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>gene_search <span class="ot">&lt;-</span> <span class="fu">entrez_search</span>(<span class="at">db=</span><span class="st">"nuccore"</span>, <span class="at">term=</span>gene_description, <span class="at">retmax=</span><span class="dv">100</span>)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>gene_search<span class="sc">$</span>id</span></code></pre></div>
+<pre><code>##   [1] "2080472916" "2080472913" "2080472910" "2080463016" "2080463013"
+##   [6] "2080463010" "2080463007" "2080463004" "2080463000" "2080462989"
+##  [11] "2080462986" "2080462983" "2080462980" "2080462976" "2080462972"
+##  [16] "2080462969" "2080437865" "2080437862" "2080437859" "2080437826"
+##  [21] "2080407020" "2080407018" "2080407016" "2080407014" "2080407009"
+##  [26] "2080351085" "2080351082" "2080351077" "2080351075" "2080351065"
+##  [31] "2080351062" "2080351059" "2080351056" "2080301866" "2080301848"
+##  [36] "2080294261" "2080294259" "2080294258" "2080294256" "2080294254"
+##  [41] "2080294252" "2080294250" "2080294248" "2080294246" "2080294243"
+##  [46] "582968269"  "2079161276" "2079155285" "2079155283" "2079155281"
+##  [51] "2079155279" "2079155277" "2079155275" "2079155273" "2079155271"
+##  [56] "2079155269" "2079155267" "2079155265" "2079155263" "2079155261"
+##  [61] "2079155259" "2079155257" "2079138996" "2079136963" "2079136961"
+##  [66] "2079136947" "2079108164" "2079108162" "2079108160" "2079108158"
+##  [71] "2079108156" "2079076276" "2079076274" "2079076273" "2079076272"
+##  [76] "2079076271" "2079076269" "2079076267" "2079076265" "2079058430"
+##  [81] "2079058428" "2079053677" "2079053675" "2079053673" "2079053671"
+##  [86] "2079053669" "2079053667" "2079053666" "2079053665" "2079053663"
+##  [91] "2077856985" "2077856983" "2077856981" "2077856979" "2077856977"
+##  [96] "2077834573" "2077834570" "2077834567" "2077834565" "2077834562"</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>gene_seqs <span class="ot">&lt;-</span> <span class="fu">entrez_fetch</span>(<span class="at">db=</span><span class="st">"nuccore"</span>, <span class="at">id=</span>gene_search<span class="sc">$</span>id[<span class="dv">1</span>], <span class="at">rettype=</span><span class="st">"fasta"</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span>(gene_seqs, <span class="st">"TP53.fasta"</span>, <span class="at">sep=</span><span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>genes_seqs <span class="ot">&lt;-</span> <span class="fu">entrez_fetch</span>(<span class="at">db=</span><span class="st">"nuccore"</span>, <span class="at">id=</span><span class="fu">c</span>(gene_search<span class="sc">$</span>id[<span class="dv">1</span>],gene_search<span class="sc">$</span>id[<span class="dv">2</span>]), <span class="at">rettype=</span><span class="st">"fasta"</span>)</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span>(genes_seqs, <span class="st">"TP53_2.fasta"</span>, <span class="at">sep=</span><span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a><span class="co"># fasta files can be uploaded with readDNAStringSet() (Biostrings r package) of with read.fasta(), from seqinr r package: </span></span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>upload_TP53_fasta<span class="ot">&lt;-</span><span class="fu">read.fasta</span>(<span class="st">"TP53.fasta"</span>,<span class="at">seqtype =</span> <span class="st">"DNA"</span>, <span class="at">as.string =</span> <span class="cn">TRUE</span>, <span class="at">forceDNAtolower =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+
+</div>
+</body></html>
+
+<p style="text-align: center;">
+</p>
+<p class="build-date">Page built: 
+2021-08-24
+ using 
+R version 4.1.1 (2021-08-10)
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>
